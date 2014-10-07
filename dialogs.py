@@ -126,6 +126,11 @@ class SourceDialog(WizardDialog):
             self.props['package']=package
             self.props['mainScript']=mainScript
             self.props['srcDir']=srcDir
+            root=self.packageRoot()
+            if not os.path.exists(root):
+                os.mkdir(root)
+            self.assign('mainScript',mainScript)
+            self.assign('srcDir',srcDir)
             self.setNextDialog(IgnoreDialog(self.props))
         else:
             QtGui.QMessageBox.warning(self,"Error","Cannot proceed without all fields")
