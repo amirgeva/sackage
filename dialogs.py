@@ -60,6 +60,27 @@ class WizardDialog(QtGui.QDialog):
 ##############################################################
 ##############################################################
 ##############################################################
+    
+class PackageInfoDialog(WizardDialog):    
+    def __init__(self,props,parent=None):
+        super(PackageInfoDialog,self).__init__('pkginfo',props,parent)
+        from sections import Sections
+        sortedSections=sorted(Sections.items(),key=lambda x : x[1])
+        self.sortedSectionCodes=[x[0] for x in sortedSections]
+        sortedSectionNames=[x[1] for x in sortedSections]
+        self.sectionCB.addItems(sortedSectionNames)
+        sel=self.query('section')
+        try:
+            index=self.sortedSectionCodes.index(sel)
+            self.sectionCB.setCurrentIndex(index)
+        except ValueError:
+            pass
+        
+    def accept(self):
+        index=self.sectionCB.currentIndex()
+        section=self.sortedSectionCodes[index]
+        self.assign('section',section)
+    
 ##############################################################
 
 class IgnoreDialog(WizardDialog):    
@@ -87,9 +108,9 @@ class IgnoreDialog(WizardDialog):
         n=self.ignoreList.count()
         res=[]
         for i in xrange(0,n):
-            res.append(self.ignoreList.itemFromIndex(i).text())
+            res.append(self.ignoreList.item(i).text())
         self.assign('ignore',','.join(res))
-        self.setNextDialog()
+        self.setNextDialog(PackageInfoDialog(self.props))
             
             
 ##############################################################
