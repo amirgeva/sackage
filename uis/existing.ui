@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QPushButton" name="nextButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>432</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Next</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="prevButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>384</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Previous</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>336</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="packageList">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>64</y>
+     <width>481</width>
+     <height>401</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>32</x>
+     <y>16</y>
+     <width>577</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Do you want to upgrade an existing package?</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
