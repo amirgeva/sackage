@@ -1,6 +1,7 @@
 from PyQt4 import QtCore,QtGui
 import os
 import uis
+import re
 
 def getenv(key,default):
     if key in os.environ:
@@ -18,6 +19,45 @@ def get(props,name,default=''):
         return props.get(name)
     return default
 
+allPackages=[] 
+
+def loadPackageList():
+    import subprocess as sp
+    all=sp.check_output(['dpkg','-l'])
+    for line in all.split('\n'):
+        parts=line.split()
+        if len(parts)>2 and parts[0]=='ii':
+            allPackages.append(parts[1])
+
+def allsubs(subs,text):
+    for s in subs:
+        if not s in text:
+            return False
+    return True
+    
+class AddDependDialog(QtGui.QDialog):
+    def __init__(self,parent=None):
+        super(AddDependDialog,self).__init__(parent)
+        if len(allPackages)==0:
+            loadPackageList()
+        uis.loadDialog('adddep',self)
+        self.filterEdit.textChanged.connect(self.filterChanged)
+        self.filterEdit.setFocus(QtCore.Qt.OtherFocusReason)
+        self.pkgList.addItems(allPackages)
+        self.pkgList.itemSelectionChanged.connect(self.selChanged)
+        self.selection=[]
+        
+    def filterChanged(self,text):
+        self.pkgList.clear()
+        parts=text.split()
+        cur=[p for p in allPackages if allsubs(parts,p)]
+        self.pkgList.addItems(cur)
+        
+    def selChanged(self):
+        items=self.pkgList.selectedItems()
+        self.selection = [item.text() for item in items]
+        
+ 
 class WizardDialog(QtGui.QDialog):
     def __init__(self,dlgName,props,parent=None):
         super(WizardDialog,self).__init__(parent)
@@ -64,6 +104,8 @@ class WizardDialog(QtGui.QDialog):
 class PackageInfoDialog(WizardDialog):    
     def __init__(self,props,parent=None):
         super(PackageInfoDialog,self).__init__('pkginfo',props,parent)
+        self.addButton.clicked.connect(self.addDep)
+        self.removeButton.clicked.connect(self.removeDep)
         from sections import Sections
         sortedSections=sorted(Sections.items(),key=lambda x : x[1])
         self.sortedSectionCodes=[x[0] for x in sortedSections]
@@ -75,11 +117,39 @@ class PackageInfoDialog(WizardDialog):
             self.sectionCB.setCurrentIndex(index)
         except ValueError:
             pass
+        index=self.priorityCB.findText(self.query('priority'))
+        if index>=0:
+            self.priorityCB.setCurrentIndex(index)
+        self.shortDescEdit.setText(self.query('shortDesc'))
+        self.longDescEdit.setPlainText(self.query('longDesc'))
+        deps=self.query('deps').split(',')
+        deps=[d for d in deps if d]
+        if len(deps)>0:
+            self.dependList.addItems(deps)
         
     def accept(self):
         index=self.sectionCB.currentIndex()
         section=self.sortedSectionCodes[index]
         self.assign('section',section)
+        self.assign('priority',self.priorityCB.currentText())
+        self.assign('shortDesc',self.shortDescEdit.text())
+        self.assign('longDesc',self.longDescEdit.toPlainText())
+        ndeps=self.dependList.count()
+        deps=[]
+        for i in xrange(0,ndeps):
+            deps.append(self.dependList.item(i).text())
+        self.assign('deps',','.join(deps))
+        
+    def removeDep(self):
+        sel=self.dependList.selectedItems()
+        for item in sel:
+            self.dependList.removeItemWidget(item)
+            
+    def addDep(self):
+        d=AddDependDialog()
+        if d.exec_():
+            for s in d.selection:
+                self.dependList.addItem(s)
     
 ##############################################################
 
