@@ -198,7 +198,7 @@
     <string>Dependencies:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="addButton">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -210,8 +210,11 @@
    <property name="text">
     <string>Add</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="removeButton">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -222,6 +225,9 @@
    </property>
    <property name="text">
     <string>Remove</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>
