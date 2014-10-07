@@ -61,7 +61,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Ignore Patterns", None))
         Dialog.removeButton.setText(_translate("Dialog", "Remove", None))
         Dialog.label_4.setText(_translate("Dialog", "Ignore List", None))
         Dialog.addButton.setText(_translate("Dialog", "Add", None))
