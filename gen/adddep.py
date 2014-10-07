@@ -34,6 +34,7 @@ class Ui_Dialog(object):
         Dialog.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         Dialog.filterEdit = QtGui.QLineEdit(Dialog)
         Dialog.filterEdit.setGeometry(QtCore.QRect(128, 16, 273, 32))
+        Dialog.filterEdit.setFocusPolicy(QtCore.Qt.StrongFocus)
         Dialog.filterEdit.setObjectName(_fromUtf8("filterEdit"))
         Dialog.label = QtGui.QLabel(Dialog)
         Dialog.label.setGeometry(QtCore.QRect(16, 16, 84, 22))
