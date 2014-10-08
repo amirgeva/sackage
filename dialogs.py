@@ -113,13 +113,40 @@ class WizardDialog(QtGui.QDialog):
         self.settings.sync()
     
 ##############################################################
+    
+class UploadDialog(WizardDialog):    
+    def __init__(self,props,parent=None):
+        super(UploadDialog,self).__init__('upload',props,parent)
+        self.userEdit.setText(load('lpuser'))
+        self.ppaEdit.setText(load('lpppa'))
+        self.package=self.query('package')
+        self.verDir=self.props['verDir']
+        self.uploadButton.clicked.connect(self.upload)
+        
+    def upload(self):
+        user=self.userEdit.text()
+        ppa=self.ppaEdit.text()
+        store('lpuser',user)
+        store('lpppa',ppa)
+        cmdlist=['dput','ppa:{}/{}'.format(user,ppa)]
+        files=os.listdir(self.verDir)
+        files=[f for f in files if f.endswith('_source.changes')]
+        if len(files)==1:
+            cmdlist.append(files[0])
+            out=sp.check_output(cmdlist,cwd=self.verDir)
+            self.outputEdit.setPlainText(out)
+        else:
+            QtGui.QMessageBox.warning(self,"Error","Failed to find *_source.changes")
+    
 ##############################################################
     
 class GenerateDialog(WizardDialog):
     def __init__(self,props,parent=None):
         super(GenerateDialog,self).__init__('generate',props,parent)
         self.generateButton.clicked.connect(self.generate)
-        self.nextButton.setDisabled(True)
+        
+    def accept(self):
+        self.setNextDialog(UploadDialog(self.props))
         
     def generate(self):
         self.package=self.props['package']
@@ -143,6 +170,7 @@ class GenerateDialog(WizardDialog):
         
         self.verName="{}-{}".format(self.package,self.ver)
         self.verDir=os.path.join(self.proot,self.verName)
+        self.props['verDir']=self.verDir
         self.dataDir=os.path.join(self.verDir,self.package)
         self.debDir=os.path.join(self.dataDir,'debian')
         
@@ -166,8 +194,16 @@ class GenerateDialog(WizardDialog):
         if len(self.pubKey)>0:
             cmdlist.append('-rfakeroot')
             cmdlist.append('-k{}'.format(self.pubKey))
+        texts=['Building Source Package','=========================================']
         out=sp.check_output(cmdlist,cwd=self.dataDir)
-        self.outputEdit.setPlainText(out)
+        texts.append(out)
+        texts.append('\n\n\n')
+        texts.append('Building Binary Package')
+        texts.append('=========================================')
+        cmdlist[1]='-b'
+        out=sp.check_output(cmdlist,cwd=self.dataDir)
+        texts.append(out)
+        self.outputEdit.setPlainText('\n'.join(texts))
         
     def generateRules(self):
         try:
