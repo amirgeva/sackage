@@ -193,7 +193,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Version Comment:</string>
+    <string>New Version Comment:</string>
    </property>
    <property name="wordWrap">
     <bool>true</bool>
@@ -252,6 +252,45 @@
    </property>
    <property name="text">
     <string>Next</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>288</x>
+     <y>32</y>
+     <width>321</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Give your package a version number</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>288</x>
+     <y>80</y>
+     <width>353</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The last version you made, for reference</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>128</y>
+     <width>321</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>How urgent is this update?</string>
    </property>
   </widget>
  </widget>
