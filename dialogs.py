@@ -2,6 +2,7 @@ from PyQt4 import QtCore,QtGui
 import os
 import uis
 import time
+import subprocess as sp
 
 def getenv(key,default):
     if key in os.environ:
@@ -20,20 +21,24 @@ def get(props,name,default=''):
     return default
 
 def chlogTimestamp():
-    return time.strftime('%a, %d %b %Y %X %z')
+    return time.strftime('%a, %d %b %Y %H:%M:%S %z')
 
 def getCodename():
-    import subprocess as sp
     out=sp.check_output(['lsb_release','-a']).split('\n')
     for line in out:
         if line.startswith('Codename:'):
             return (line.split())[-1]
     return ''
+    
+class GenerateError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 allPackages=[] 
 
 def loadPackageList():
-    import subprocess as sp
     all=sp.check_output(['dpkg','-l'])
     for line in all.split('\n'):
         parts=line.split()
@@ -110,16 +115,167 @@ class WizardDialog(QtGui.QDialog):
 ##############################################################
 ##############################################################
     
-class GenerateDialog(QtGui.QDialog):
+class GenerateDialog(WizardDialog):
     def __init__(self,props,parent=None):
-        super(GenerateDialog,self).__init__(parent)
-        self.props=props
-        uis.loadDialog('generate',self)
+        super(GenerateDialog,self).__init__('generate',props,parent)
         self.generateButton.clicked.connect(self.generate)
+        self.nextButton.setDisabled(True)
         
     def generate(self):
-        pass
-    
+        self.package=self.props['package']
+        self.name=self.props['name']
+        self.email=self.props['email']
+        self.pubKey=self.props['pubKey']
+        self.proot=os.path.join(self.props['buildRoot'],self.package)
+        s=QtCore.QSettings(os.path.join(self.proot,'settings.ini'))
+        self.ver=s.value('ver').toString()
+        self.verComment=s.value('verComment').toString()
+        self.urgency=s.value('urgency').toString()
+        self.license=s.value('license').toString()
+        self.section=s.value('section').toString()
+        self.priority=s.value('priority').toString()
+        self.shortDesc=s.value('shortDesc').toString()
+        self.longDesc=s.value('longDesc').toString()
+        self.deps=s.value('deps').toString().replace(',',', ')
+        self.ignore=s.value('ignore').toString().split(',')
+        self.mainScript=s.value('mainScript').toString()
+        self.srcDir=s.value('srcDir').toString()
+        
+        self.verName="{}-{}".format(self.package,self.ver)
+        self.verDir=os.path.join(self.proot,self.verName)
+        self.dataDir=os.path.join(self.verDir,self.package)
+        self.debDir=os.path.join(self.dataDir,'debian')
+        
+        try:
+            self.createVerDir()
+            if not os.path.exists(self.debDir):
+                os.makedirs(self.debDir)
+            self.generateTar()
+            self.generateMakefile()
+            self.generateChangelog()
+            self.generateControl()
+            self.generateCopyright()
+            self.generateRules()
+            
+            self.buildPackage()
+        except GenerateError as e:
+            QtGui.QMessageBox.warning(self,"Aborting",e.value)
+        
+    def buildPackage(self):
+        cmdlist=['debuild','-S']
+        if len(self.pubKey)>0:
+            cmdlist.append('-rfakeroot')
+            cmdlist.append('-k{}'.format(self.pubKey))
+        out=sp.check_output(cmdlist,cwd=self.dataDir)
+        self.outputEdit.setPlainText(out)
+        
+    def generateRules(self):
+        try:
+            out=os.path.join(self.debDir,'rules')
+            f=open(out,'w')
+            f.write("#!/usr/bin/make -f\n%:\n\tdh $@\n")
+            f.close()
+        except OSError as e:
+            raise GenerateError(str(e))
+        
+        
+    def generateCopyright(self):
+        try:
+            year=time.strftime('%Y')
+            out=os.path.join(self.debDir,'copyright')
+            f=open(out,'w')
+            f.write("Files: *\nCopyright: {} {}".format(year,self.name))
+            f.write("License: {}\n\n".format(self.license))
+            f.close()
+        except OSError as e:
+            raise GenerateError(str(e))
+
+    def generateControl(self):
+        try:
+            out=os.path.join(self.debDir,'control')
+            f=open(out,'w')
+            f.write("Source: {}\n".format(self.package))
+            f.write("Maintainer: {} <{}>\n".format(self.name,self.email))
+            f.write("Section: {}\n".format(self.section))
+            f.write("Priority: {}\n".format(self.priority))
+            f.write("Build-Depends: debhelper (>= 9)\n")
+            f.write("\n")
+            f.write("Package: {}\n".format(self.package))
+            f.write("Architecture: all\n")
+            f.write("Depends: {}\n".format(self.deps))
+            f.write("Description: {}\n".format(self.shortDesc))
+            for line in self.longDesc.split('\n'):
+                f.write(' {}\n'.format(line))
+            f.close()
+        except OSError as e:
+            raise GenerateError(str(e))
+
+    def generateChangelog(self):
+        out=os.path.join(self.debDir,'changelog')
+        osver=getCodename()
+        prev=''
+        try:
+            if os.path.exists(out):
+                f=open(out,'r')
+                prev=f.read()
+                f.close()
+            f=open(out,'w')
+            f.write('{} ({}) {}; urgency={}\n\n'.format(self.package,self.ver,osver,self.urgency))
+            lines=self.verComment.split('\n')
+            for line in lines:
+                f.write('  * {}\n'.format(line))
+            f.write('\n -- {} <{}>  {}\n\n'.format(self.name,self.email,chlogTimestamp()))
+            f.write(prev)
+            f.close()
+        except OSError as e:
+            raise GenerateError(str(e))
+
+    def createVerDir(self):
+        try:
+            if os.path.exists(self.verDir):
+                yes=QtGui.QMessageBox.Yes
+                yesno=yes | QtGui.QMessageBox.No
+                res=QtGui.QMessageBox.question(self,"Packge Directory Exists","Do you want to overwrite?",yesno,yes)
+                if res!=yes:
+                    raise GenerateError("Aborted")
+            else:
+                os.mkdir(self.verDir)
+        except OSError as e:
+            raise GenerateError(str(e))
+            
+    def generateMakefile(self):
+        out=os.path.join(self.dataDir,'Makefile')
+        try:
+            f=open(out,'w')
+            f.write("ifeq ($(DESTDIR),)\n")
+            f.write("	DESTDIR=/usr\n")
+            f.write("endif\n")
+            f.write("\n")
+            f.write("all:\n")
+            f.write("	echo '#!/bin/sh' > {}\n".format(self.package))
+            f.write("	echo $(DESTDIR)/share/{}/{} >> {}\n".format(self.package,self.mainScript,self.package))
+            f.write("	chmod +x {}\n".format(self.package))
+            f.write("\n")
+            f.write("install:\n")
+            f.write("	install -d $(DESTDIR)/usr/share/{}\n".format(self.package))
+            f.write("	tar -xf data.tar -C $(DESTDIR)/usr/share/{}\n".format(self.package))
+            f.write("	install -d $(DESTDIR)/usr/bin\n")
+            f.write("	install -t $(DESTDIR)/usr/bin {}\n".format(self.package))
+            f.write("\n")
+            f.close()
+        except OSError as e:
+            raise GenerateError(str(e))
+            
+    def generateTar(self):
+        out=os.path.join(self.dataDir,'data.tar')
+        cmdlist=['tar','cf',out,'.']
+        for pattern in self.ignore:
+            cmdlist.append('--exclude='+pattern)
+        res=sp.call(cmdlist,cwd=self.srcDir)
+        if res!=0:
+            raise GenerateError('tar failed with return code {}'.format(res))
+        
+
 ##############################################################
     
 class VersionInfoDialog(WizardDialog):    
@@ -132,12 +288,13 @@ class VersionInfoDialog(WizardDialog):
         index=self.urgencyCB.findText(self.query('urgency'))
         if index>=0:
             self.urgencyCB.setCurrentIndex(index)
+        self.versionCommentEdit.setPlainText(self.query('verComment'))
     
     def accept(self):
-        ver=newVersionEdit.text()
+        ver=self.newVersionEdit.text()
         urgency=self.urgencyCB.currentText()
         license=self.licenseCB.currentText()
-        comment=self.commentTextEdit.toPlainText()
+        comment=self.versionCommentEdit.toPlainText()
         if ver and comment:
             self.assign('ver',ver)
             self.assign('urgency',urgency)
@@ -338,11 +495,17 @@ class NameDialog(WizardDialog):
         self.bashrcButton.clicked.connect(self.addToBash)
         self.nameEdit.setText(getenv('DEBFULLNAME',''))
         self.emailEdit.setText(getenv('DEBEMAIL',''))
+        self.pubKeyEdit.setText(load('pubKey').toString())
         
     def accept(self):
         name=self.nameEdit.text()
         email=self.emailEdit.text()
+        pubKey=self.pubKeyEdit.text()
         if name and email:
+            self.props['name']=name
+            self.props['email']=email
+            self.props['pubKey']=pubKey
+            store('pubKey',pubKey)
             self.setNextDialog(MainDialog(self.props))
         else:
             QtGui.QMessageBox.warning(self,"Error","Cannot continue without maintainer details")
