@@ -117,8 +117,8 @@ class WizardDialog(QtGui.QDialog):
 class UploadDialog(WizardDialog):    
     def __init__(self,props,parent=None):
         super(UploadDialog,self).__init__('upload',props,parent)
-        self.userEdit.setText(load('lpuser'))
-        self.ppaEdit.setText(load('lpppa'))
+        self.userEdit.setText(load('lpuser').toString())
+        self.ppaEdit.setText(load('lpppa').toString())
         self.package=self.query('package')
         self.verDir=self.props['verDir']
         self.uploadButton.clicked.connect(self.upload)
@@ -144,11 +144,7 @@ class GenerateDialog(WizardDialog):
     def __init__(self,props,parent=None):
         super(GenerateDialog,self).__init__('generate',props,parent)
         self.generateButton.clicked.connect(self.generate)
-        
-    def accept(self):
-        self.setNextDialog(UploadDialog(self.props))
-        
-    def generate(self):
+
         self.package=self.props['package']
         self.name=self.props['name']
         self.email=self.props['email']
@@ -174,6 +170,10 @@ class GenerateDialog(WizardDialog):
         self.dataDir=os.path.join(self.verDir,self.package)
         self.debDir=os.path.join(self.dataDir,'debian')
         
+    def accept(self):
+        self.setNextDialog(UploadDialog(self.props))
+        
+    def generate(self):
         try:
             self.createVerDir()
             if not os.path.exists(self.debDir):
