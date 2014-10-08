@@ -109,11 +109,43 @@ class WizardDialog(QtGui.QDialog):
     
 ##############################################################
 ##############################################################
+    
+class GenerateDialog(QtGui.QDialog):
+    def __init__(self,props,parent=None):
+        super(GenerateDialog,self).__init__(parent)
+        self.props=props
+        uis.loadDialog('generate',self)
+        self.generateButton.clicked.connect(self.generate)
+        
+    def generate(self):
+        pass
+    
 ##############################################################
     
 class VersionInfoDialog(WizardDialog):    
     def __init__(self,props,parent=None):
         super(VersionInfoDialog,self).__init__('pkginfo2',props,parent)
+        self.lastVersionEdit.setText(self.query('lastVersion'))
+        index=self.licenseCB.findText(self.query('license'))
+        if index>=0:
+            self.licenseCB.setCurrentIndex(index)
+        index=self.urgencyCB.findText(self.query('urgency'))
+        if index>=0:
+            self.urgencyCB.setCurrentIndex(index)
+    
+    def accept(self):
+        ver=newVersionEdit.text()
+        urgency=self.urgencyCB.currentText()
+        license=self.licenseCB.currentText()
+        comment=self.commentTextEdit.toPlainText()
+        if ver and comment:
+            self.assign('ver',ver)
+            self.assign('urgency',urgency)
+            self.assign('license',license)
+            self.assign('verComment',comment)
+            self.setNextDialog(GenerateDialog(self.props))
+        else:
+            QtGui.QMessageBox.warning(self,"Error","Cannot continue without all fields")
     
 ##############################################################
     
