@@ -1,7 +1,7 @@
 from PyQt4 import QtCore,QtGui
 import os
 import uis
-import re
+import time
 
 def getenv(key,default):
     if key in os.environ:
@@ -18,6 +18,17 @@ def get(props,name,default=''):
     if name in props:
         return props.get(name)
     return default
+
+def chlogTimestamp():
+    return time.strftime('%a, %d %b %Y %X %z')
+
+def getCodename():
+    import subprocess as sp
+    out=sp.check_output(['lsb_release','-a']).split('\n')
+    for line in out:
+        if line.startswith('Codename:'):
+            return (line.split())[-1]
+    return ''
 
 allPackages=[] 
 
@@ -99,6 +110,11 @@ class WizardDialog(QtGui.QDialog):
 ##############################################################
 ##############################################################
 ##############################################################
+    
+class VersionInfoDialog(WizardDialog):    
+    def __init__(self,props,parent=None):
+        super(VersionInfoDialog,self).__init__('pkginfo2',props,parent)
+    
 ##############################################################
     
 class PackageInfoDialog(WizardDialog):    
@@ -139,6 +155,7 @@ class PackageInfoDialog(WizardDialog):
         for i in xrange(0,ndeps):
             deps.append(self.dependList.item(i).text())
         self.assign('deps',','.join(deps))
+        self.setNextDialog(VersionInfoDialog(self.props))
         
     def removeDep(self):
         sel=self.dependList.selectedItems()
