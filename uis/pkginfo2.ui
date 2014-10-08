@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Version Information</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>16</x>
-     <y>32</y>
+     <y>176</y>
      <width>84</width>
      <height>22</height>
     </rect>
@@ -26,11 +26,11 @@
     <string>License:</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="licenseCB">
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>32</y>
+     <y>176</y>
      <width>241</width>
      <height>32</height>
     </rect>
@@ -85,6 +85,174 @@
      <string>LGPL-3</string>
     </property>
    </item>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>32</y>
+     <width>129</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>New Version:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="newVersionEdit">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>32</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>80</y>
+     <width>129</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Last Version:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lastVersionEdit">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>80</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="urgencyCB">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>128</y>
+     <width>145</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>low</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>medium</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>high</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>emergency</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>critical</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>128</y>
+     <width>84</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Urgency:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>240</y>
+     <width>129</width>
+     <height>49</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Version Comment:</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="versionCommentEdit">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>240</y>
+     <width>305</width>
+     <height>225</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>336</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="prevButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>384</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Previous</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="nextButton">
+   <property name="geometry">
+    <rect>
+     <x>512</x>
+     <y>432</y>
+     <width>119</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Next</string>
+   </property>
   </widget>
  </widget>
  <resources/>
