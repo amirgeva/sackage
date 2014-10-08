@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Maintainer Details</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>32</x>
-     <y>128</y>
+     <y>112</y>
      <width>145</width>
      <height>22</height>
     </rect>
@@ -30,9 +30,9 @@
    <property name="geometry">
     <rect>
      <x>32</x>
-     <y>0</y>
+     <y>32</y>
      <width>609</width>
-     <height>97</height>
+     <height>49</height>
     </rect>
    </property>
    <property name="text">
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>192</x>
-     <y>128</y>
+     <y>112</y>
      <width>257</width>
      <height>32</height>
     </rect>
@@ -56,7 +56,7 @@
    <property name="geometry">
     <rect>
      <x>32</x>
-     <y>192</y>
+     <y>160</y>
      <width>145</width>
      <height>22</height>
     </rect>
@@ -69,7 +69,7 @@
    <property name="geometry">
     <rect>
      <x>192</x>
-     <y>192</y>
+     <y>160</y>
      <width>257</width>
      <height>32</height>
     </rect>
@@ -134,6 +134,42 @@
    </property>
    <property name="text">
     <string>Next</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>32</x>
+     <y>208</y>
+     <width>145</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>GPG Public Key:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="pubKeyEdit">
+   <property name="geometry">
+    <rect>
+     <x>192</x>
+     <y>208</y>
+     <width>193</width>
+     <height>32</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>208</y>
+     <width>177</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>e.g.  A7DB327C</string>
    </property>
   </widget>
  </widget>
