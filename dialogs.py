@@ -99,7 +99,10 @@ class WizardDialog(QtGui.QDialog):
         
     def packageSettings(self):
         path=os.path.join(self.packageRoot(),'settings.ini')
-        return QtCore.QSettings(path)
+        print "Trying to setup settings at: '{}'".format(path)
+        s=QtCore.QSettings(path)
+        print "Loading package settings from: {}".format(s.fileName())
+        return s
         
     def query(self,name,default=''):
         if not self.settings:
@@ -247,14 +250,16 @@ class GenerateDialog(WizardDialog):
             raise GenerateError(str(e))
 
     def generateChangelog(self):
-        out=os.path.join(self.debDir,'changelog')
-        osver=getCodename()
         prev=''
-        try:
-            if os.path.exists(out):
-                f=open(out,'r')
+        if 'lastVer' in self.props:
+            prevChangelog=os.path.join(self.props.get('lastVer'),self.props.get('package'),'debian','changelog')
+            if os.path.exists(prevChangelog):
+                f=open(prevChangelog,'r')
                 prev=f.read()
                 f.close()
+        out=os.path.join(self.debDir,'changelog')
+        osver=getCodename()
+        try:
             f=open(out,'w')
             f.write('{} ({}) {}; urgency={}\n\n'.format(self.package,self.ver,osver,self.urgency))
             lines=self.verComment.split('\n')
@@ -489,7 +494,11 @@ class ExistingDialog(WizardDialog):
         else:
             package=sel[0].text()
             self.props['package']=package
-            path=os.path.join(self.dir,package,'settings.ini')
+            pkgDir=os.path.join(self.dir,package)
+            verDirs=os.listdir(pkgDir)
+            verDirs=sorted(verDirs)
+            self.props['lastVer']=os.path.join(pkgDir,verDirs[-1])
+            path=os.path.join(pkgDir,'settings.ini')
             s=QtCore.QSettings(path)
             self.props['mainScript']=s.value('mainScript').toString()
             self.props['srcDir']=s.value('srcDir').toString()
