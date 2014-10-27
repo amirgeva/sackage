@@ -497,9 +497,12 @@ class ExistingDialog(WizardDialog):
             pkgDir=os.path.join(self.dir,package)
             verDirs=os.listdir(pkgDir)
             verDirs=sorted(verDirs)
-            self.props['lastVer']=os.path.join(pkgDir,verDirs[-1])
+            lastVer=os.path.join(pkgDir,verDirs[-1])
+            lastVerNum=(lastVer.split('-'))[-1]
+            self.props['lastVer']=lastVer
             path=os.path.join(pkgDir,'settings.ini')
             s=QtCore.QSettings(path)
+            s.setValue('lastVersion',lastVerNum)
             self.props['mainScript']=s.value('mainScript').toString()
             self.props['srcDir']=s.value('srcDir').toString()
             self.setNextDialog(SourceDialog(self.props))
