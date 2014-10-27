@@ -49,7 +49,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Upgrade Package", None))
         Dialog.nextButton.setText(_translate("Dialog", "Next", None))
         Dialog.prevButton.setText(_translate("Dialog", "Previous", None))
         Dialog.cancelButton.setText(_translate("Dialog", "Cancel", None))
