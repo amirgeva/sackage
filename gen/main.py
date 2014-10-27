@@ -57,7 +57,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Build Output", None))
         Dialog.label_3.setText(_translate("Dialog", "Build Output:", None))
         Dialog.buildDirBrowseButton.setText(_translate("Dialog", "...", None))
         Dialog.label.setText(_translate("Dialog", "Directory where the package is built.   If a package was previously built there, you will be prompted for an updated version and information", None))
