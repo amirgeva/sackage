@@ -73,7 +73,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Source Information", None))
         Dialog.label_2.setText(_translate("Dialog", "Package Name:", None))
         Dialog.srcDirBrowseButton.setText(_translate("Dialog", "...", None))
         Dialog.label.setText(_translate("Dialog", "Source Directory:", None))
