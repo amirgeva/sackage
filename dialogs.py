@@ -193,20 +193,27 @@ class GenerateDialog(WizardDialog):
             QtGui.QMessageBox.warning(self,"Aborting",e.value)
         
     def buildPackage(self):
-        cmdlist=['debuild','-S']
-        if len(self.pubKey)>0:
-            cmdlist.append('-rfakeroot')
-            cmdlist.append('-k{}'.format(self.pubKey))
-        texts=['Building Source Package','=========================================']
-        out=sp.check_output(cmdlist,cwd=self.dataDir)
-        texts.append(out)
-        texts.append('\n\n\n')
-        texts.append('Building Binary Package')
-        texts.append('=========================================')
-        cmdlist[1]='-b'
-        out=sp.check_output(cmdlist,cwd=self.dataDir)
-        texts.append(out)
-        self.outputEdit.setPlainText('\n'.join(texts))
+        try:
+            cmdlist=['debuild','-S']
+            if len(self.pubKey)>0:
+                cmdlist.append('-rfakeroot')
+                cmdlist.append('-k{}'.format(self.pubKey))
+            texts=['Building Source Package','=========================================']
+            print '{}$ {}'.format(self.dataDir,cmdlist)
+            out=sp.check_output(cmdlist,cwd=self.dataDir)
+            texts.append(out)
+            texts.append('\n\n\n')
+            texts.append('Building Binary Package')
+            texts.append('=========================================')
+            cmdlist[1]='-b'
+            print '{}$ {}'.format(self.dataDir,cmdlist)
+            out=sp.check_output(cmdlist,cwd=self.dataDir)
+            texts.append(out)
+            self.outputEdit.setPlainText('\n'.join(texts))
+        except OSError:
+            QtGui.QMessageBox.critical(self,'Missing Package','Missing  debuild\nsudo apt-get install devscripts')
+        except subprocess.CalledProcessError:
+            print "FAILED: out='{}' err='{}'".format(out,err)
         
     def generateRules(self):
         try:
@@ -223,7 +230,7 @@ class GenerateDialog(WizardDialog):
             year=time.strftime('%Y')
             out=os.path.join(self.debDir,'copyright')
             f=open(out,'w')
-            f.write("Files: *\nCopyright: {} {}".format(year,self.name))
+            f.write("Files: *\nCopyright: {} {}\n".format(year,self.name))
             f.write("License: {}\n\n".format(self.license))
             f.close()
         except OSError as e:
