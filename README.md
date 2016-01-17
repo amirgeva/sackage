@@ -15,8 +15,9 @@ and then builds all of the control files and runs the appropriate build tools.
 
 
 Dependency Packages:
-debhelper
-devscripts
-build-essential
-dput
+
+* debhelper
+* devscripts
+* build-essential
+* dput
 
