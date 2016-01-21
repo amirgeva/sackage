@@ -212,7 +212,7 @@ class GenerateDialog(WizardDialog):
             self.outputEdit.setPlainText('\n'.join(texts))
         except OSError:
             QtGui.QMessageBox.critical(self,'Missing Package','Missing  debuild\nsudo apt-get install devscripts')
-        except subprocess.CalledProcessError:
+        except sp.CalledProcessError:
             print "FAILED: out='{}' err='{}'".format(out,err)
         
     def generateRules(self):
@@ -259,11 +259,12 @@ class GenerateDialog(WizardDialog):
     def generateChangelog(self):
         prev=''
         if 'lastVer' in self.props:
-            prevChangelog=os.path.join(self.props.get('lastVer'),self.props.get('package'),'debian','changelog')
-            if os.path.exists(prevChangelog):
-                f=open(prevChangelog,'r')
-                prev=f.read()
-                f.close()
+            if self.props.get('lastVer')!=self.ver:
+                prevChangelog=os.path.join(self.props.get('lastVer'),self.props.get('package'),'debian','changelog')
+                if os.path.exists(prevChangelog):
+                    f=open(prevChangelog,'r')
+                    prev=f.read()
+                    f.close()
         out=os.path.join(self.debDir,'changelog')
         osver=getCodename()
         try:
