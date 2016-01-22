@@ -231,7 +231,7 @@ class GenerateDialog(WizardDialog):
             out=os.path.join(self.debDir,'copyright')
             f=open(out,'w')
             f.write("Files: *\nCopyright: {} {}\n".format(year,self.name))
-            f.write("License: {}\n\n".format(self.license))
+            f.write("License: /usr/share/common-licenses/{}\n\n".format(self.license))
             f.close()
         except OSError as e:
             raise GenerateError(str(e))
@@ -244,6 +244,7 @@ class GenerateDialog(WizardDialog):
             f.write("Maintainer: {} <{}>\n".format(self.name,self.email))
             f.write("Section: {}\n".format(self.section))
             f.write("Priority: {}\n".format(self.priority))
+            f.write("Standards-Version: 3.9.6\n")
             f.write("Build-Depends: debhelper (>= 9)\n")
             f.write("\n")
             f.write("Package: {}\n".format(self.package))
@@ -320,6 +321,7 @@ class GenerateDialog(WizardDialog):
         cmdlist=['tar','cf',out,'.']
         for pattern in self.ignore:
             cmdlist.append('--exclude='+pattern)
+        cmdlist.append('--exclude=.*')
         res=sp.call(cmdlist,cwd=self.srcDir)
         if res!=0:
             raise GenerateError('tar failed with return code {}'.format(res))
